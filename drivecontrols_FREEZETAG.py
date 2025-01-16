@@ -7,11 +7,15 @@ brain=Brain()
 
 # Robot configuration code
 controller_1 = Controller(PRIMARY)
-left_drive_smart = Motor(Ports.PORT11, GearSetting.RATIO_18_1, False)
-right_drive_smart = Motor(Ports.PORT12, GearSetting.RATIO_18_1, True)
-drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 319.19, 295, 40, MM, 1)
 bumper_a = Bumper(brain.three_wire_port.a)
 bumper_b = Bumper(brain.three_wire_port.b)
+left_motor_a = Motor(Ports.PORT11, GearSetting.RATIO_18_1, False)
+left_motor_b = Motor(Ports.PORT15, GearSetting.RATIO_18_1, False)
+left_drive_smart = MotorGroup(left_motor_a, left_motor_b)
+right_motor_a = Motor(Ports.PORT12, GearSetting.RATIO_18_1, True)
+right_motor_b = Motor(Ports.PORT14, GearSetting.RATIO_18_1, True)
+right_drive_smart = MotorGroup(right_motor_a, right_motor_b)
+drivetrain = DriveTrain(left_drive_smart, right_drive_smart, 319.19, 295, 40, MM, 1)
 
 
 # wait for rotation sensor to fully initialize
@@ -54,10 +58,10 @@ def rc_auto_loop_function_controller_1():
         if remote_control_code_enabled:
             
             # calculate the drivetrain motor velocities from the controller joystick axies
-            # left = axis3
-            # right = axis2
-            drivetrain_left_side_speed = controller_1.axis3.position()
-            drivetrain_right_side_speed = controller_1.axis2.position()
+            # left = axis3 + axis1
+            # right = axis3 - axis1
+            drivetrain_left_side_speed = controller_1.axis3.position() + controller_1.axis1.position()
+            drivetrain_right_side_speed = controller_1.axis3.position() - controller_1.axis1.position()
             
             # check if the value is inside of the deadband range
             if drivetrain_left_side_speed < 5 and drivetrain_left_side_speed > -5:
